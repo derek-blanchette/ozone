@@ -1,0 +1,100 @@
+You may have heard of the ozone hole, but did you know that it's cyclic? Did you also know that scientists concluded that its yearly pattern stabilized in the 90s? If you are interested in the ozone hole, then you will definitely be interested in <a href = "http://ozonewatch.gsfc.nasa.gov/">NASA's Ozone Hole Watch program.</a> There you have access to images and data from their monitoring of the Southern Hemisphere. 
+
+In this article, we are going to download the daily ozone hole area measurements directly from NASA's website. We are then going to examine for ourselves whether the ozone hole shows signs of being a stable phenomenon. 
+
+
+The data for the ozone hole area measurements are provided in text format. Here we download that information directly and create a dataframe we can use for analysis. You will note that I am deleting 2/29 from the leap years of 2008, 2012, and 2016. 
+
+```{r}
+
+url <- "http://ozonewatch.gsfc.nasa.gov/meteorology/figures/merra/ozone/toms_areas_2017_omi+merra.txt"
+data2017 <- read.table(file = url, sep = "", skip = 5, header = TRUE)
+
+url <- "http://ozonewatch.gsfc.nasa.gov/meteorology/figures/merra/ozone/toms_areas_2016_omi+merra.txt"
+data2016 <- read.table(file = url, sep = "", skip = 5, header = TRUE)
+data2016 <- data2016[-60,]
+
+url <- "http://ozonewatch.gsfc.nasa.gov/meteorology/figures/merra/ozone/toms_areas_2015_omi+merra.txt"
+data2015 <- read.table(file = url, sep = "", skip = 5, header = TRUE)
+
+url <- "http://ozonewatch.gsfc.nasa.gov/meteorology/figures/merra/ozone/toms_areas_2014_omi+merra.txt"
+data2014 <- read.table(file = url, sep = "", skip = 5, header = TRUE)
+
+url <- "http://ozonewatch.gsfc.nasa.gov/meteorology/figures/merra/ozone/toms_areas_2013_omi+merra.txt"
+data2013 <- read.table(file = url, sep = "", skip = 5, header = TRUE)
+
+url <- "http://ozonewatch.gsfc.nasa.gov/meteorology/figures/merra/ozone/toms_areas_2012_omi+merra.txt"
+data2012 <- read.table(file = url, sep = "", skip = 5, header = TRUE)
+data2012 <- data2012[-60,]
+
+url <- "http://ozonewatch.gsfc.nasa.gov/meteorology/figures/merra/ozone/toms_areas_2011_omi+merra.txt"
+data2011 <- read.table(file = url, sep = "", skip = 5, header = TRUE)
+
+url <- "http://ozonewatch.gsfc.nasa.gov/meteorology/figures/merra/ozone/toms_areas_2010_omi+merra.txt"
+data2010 <- read.table(file = url, sep = "", skip = 5, header = TRUE)
+
+url <- "http://ozonewatch.gsfc.nasa.gov/meteorology/figures/merra/ozone/toms_areas_2009_omi+merra.txt"
+data2009 <- read.table(file = url, sep = "", skip = 5, header = TRUE)
+
+url <- "http://ozonewatch.gsfc.nasa.gov/meteorology/figures/merra/ozone/toms_areas_2008_omi+merra.txt"
+data2008 <- read.table(file = url, sep = "", skip = 5, header = TRUE)
+data2008 <- data2008[-60,]
+
+```
+
+These data sets contain the minimum, the mean, and the maximum ozone hole area for each day of the year. There are also four quantiles available to help characterize the daily distribution. Here we put ten years worth of daily maximum values into one vector. 
+
+
+```{r}
+OZ.max <- c(data2017$Maximum,
+            data2016$Maximum,
+            data2015$Maximum,
+            data2014$Maximum,
+            data2013$Maximum,
+            data2012$Maximum,
+            data2011$Maximum,
+            data2010$Maximum,
+            data2009$Maximum,
+            data2008$Maximum)
+```
+
+Now we create a time series object. The data are sampled at 365 times a year starting at January 2008.
+
+```{r}
+OZ.timeseries <- ts(OZ.max, frequency = 365, start = c(2008,1))
+```
+
+Finally, we can begin to examine the longitudinal trend. A plot of the daily values does show that the ozone hole has a yearly cycle. 
+
+```{r}
+plot(OZ.timeseries,
+     main = "Longitudinal Data: Ozone Hole Area",
+     ylab = "Millions of km^2")
+```
+
+The high resolution of these data is making our plot a little less clear than we may like. To help clean things up, we can use a 7 day moving average. We will be using the TTR package for this, which you may need to install first.
+
+```{r}
+library(TTR)
+
+OZ.SMA7 <- ts(SMA(OZ.timeseries, n = 7), frequency = 365, start = c(2008,1))
+
+plot(OZ.SMA7,
+     main = "Weekly Moving Average, Ozone Hole Area",
+     ylab = "Millions of km^2")
+```
+
+The plot of the smoothed data really does help clarify the yearly features. You will have to decide for yourself which plot best serves your interests. 
+
+When we perform the decomposition of the time series, we are able to separate the seasonal trend from the overall trend. We do this here:
+
+```{r}
+OZ.components <- decompose(OZ.timeseries)
+
+plot(OZ.components)
+```
+
+As we might have expected from our previous plots, the overall trend is flat. Take care when interpreting the trend as the units on the axis are not the same as the original plots.
+
+-Derek  
+Numeric Intelligence, LLC
