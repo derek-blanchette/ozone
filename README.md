@@ -1,2 +1,2 @@
 # ozone
-Time series analysis of atmospheric ozone
+Time series analysis of atmospheric ozone levels
