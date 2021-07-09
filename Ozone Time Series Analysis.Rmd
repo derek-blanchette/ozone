@@ -1,8 +1,12 @@
 ---
+title: "Ozone Time Series"
+author: "Derek R. Blanchette"
+date: "7/9/2021"
 output:
   pdf_document: default
   html_document: default
 ---
+
 You may have heard of the ozone hole, but did you know that it's cyclic? Did you also know that scientists concluded that its yearly pattern stabilized in the 90s? If you are interested in the ozone hole, then you will definitely be interested in <a href = "http://ozonewatch.gsfc.nasa.gov/">NASA's Ozone Hole Watch program.</a> There you have access to images and data from their monitoring of the Southern Hemisphere. 
 
 In this article, we are going to download the daily ozone hole area measurements directly from NASA's website. We are then going to examine for ourselves whether the ozone hole shows signs of being a stable phenomenon. 
